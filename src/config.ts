@@ -56,7 +56,7 @@ export const profileConfig: ProfileConfig = {
   bio: 'A dev, CTF player, mainly focus on web security',
   links: [
     {
-      name: 'Twitter',
+      name: 'HackerOne',
       icon: 'fa6-brands:twitter',       // Visit https://icones.js.org/ for icon codes
                                         // You will need to install the corresponding icon set if it's not already included
                                         // `pnpm add @iconify-json/<icon-set-name>`
