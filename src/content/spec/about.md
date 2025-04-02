@@ -1,7 +1,17 @@
 # About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+Hi, I am huli07, currently an undergraduate in [HCMUS](https://hcmus.edu.vn), I love coding websites and mobile apps. Currently I am a CTF player and focusing mainly on web security.
 
-::github{repo="saicaca/fuwari"}
+### Some of my CTF achievements:
+- **4th** place at **HCMUS-CTF 2024**
+- **1th** place at **warm-up CTF 2024** organized by HCMUS
+- **100+** Web hacking CTF challenges solved on **Dreamhack**, ranging from level 1 to 9 -> [My account](https://dreamhack.io/users/63923)
+
+
+### Some of my coding projects:
+::github{repo="linhnph05/PokerAI-Pygame"}
+::github{repo="linhnph05/Streak-tracker"}
+::github{repo="linhnph05/HCMUS-Scraper"}
+::github{repo="linhnph05/Django-blog"}
 
 > ### Sources of images used in this site
 > - [Unsplash](https://unsplash.com/)
