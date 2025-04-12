@@ -7,9 +7,6 @@ Hi, I am huli07, currently an undergraduate in [HCMUS](https://hcmus.edu.vn), I 
 - **Top 12** in South region at **GDOC Hackathon Vietnam 2025**
 - **100+** Web hacking CTF challenges solved on **Dreamhack**, ranging from level 1 to 9 -> [My account](https://dreamhack.io/users/63923)
 
-### CVEs:
-- CVE-2025-32379 (Koajs)
-
 ### Some of my coding projects:
 ::github{repo="linhnph05/PokerAI-Pygame"}
 ::github{repo="linhnph05/Streak-tracker"}
