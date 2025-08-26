@@ -2,9 +2,9 @@
 title: CodeGate 2025 CTF - Masquerade writeup
 published: 2025-04-02
 description: 'A client-side challenge from CodeGate 2025 - 41 solves'
-image: ''
+image: './codegate2025.png'
 tags: [CTF, web, client-side, Dompurify, XSS, Unicode, DOM Clobbering, RPO]
-category: 'writeup'
+category: 'Writeup'
 draft: false 
 lang: ''
 ---

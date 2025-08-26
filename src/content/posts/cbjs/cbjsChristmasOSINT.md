@@ -2,9 +2,9 @@
 title: Writeup Cyberjutsu Christmas OSINT 2024 challenge
 published: 2024-12-25
 description: 'Writeup  for Cyberjutsu Christmas OSINT 2024 challenge'
-image: ''
+image: './cbjs.jpg'
 tags: [OSINT, writeup, CTF]
-category: 'writeup'
+category: 'Writeup'
 draft: false 
 lang: ''
 ---

@@ -2,9 +2,9 @@
 title: HCMUS-CTF(Qualification) 2024 Writeup
 published: 2024-12-01
 description: 'Writeup for HCMUS-CTF 2024'
-image: ''
+image: './hcmus2024.png'
 tags: [web, CTF, writeup]
-category: 'writeup'
+category: 'Writeup'
 draft: false 
 lang: ''
 ---

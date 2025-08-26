@@ -24,6 +24,7 @@ export default defineConfig({
   site: "https://linhnph05.github.io/",
   base: "/",
   trailingSlash: "always",
+  server: { host: "127.0.0.1", port: 4321 },
   integrations: [
     tailwind(
         {

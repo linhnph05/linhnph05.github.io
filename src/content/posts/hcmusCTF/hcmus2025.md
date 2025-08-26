@@ -2,9 +2,9 @@
 title: HCMUS-CTF(Qualification+Final) 2025 Writeup
 published: 2025-08-20
 description: 'Writeup for HCMUS-CTF 2025'
-image: ''
+image: './hcmus2025.png'
 tags: [web, AI, ctf, writeup]
-category: ''
+category: 'Writeup'
 draft: false 
 lang: ''
 ---
