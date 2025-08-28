@@ -13,9 +13,31 @@ lang: ''
 This note is for my own educational purposes only, it is used for me to quickly remind me how some functions work when auditing plugins, so don't expect it to be well-organized and easy to understand
 :::
 
-# Searching:
+# Links:
 - https://developer.wordpress.org/reference/
 - https://developer.wordpress.org/apis/security/escaping/
+- https://developer.wordpress.org/plugins/
+- https://book.hacktricks.wiki/en/network-services-pentesting/pentesting-web/wordpress.html?highlight=wordpress#get-plugins
+- Searching previous CVE of a plugin: wpscan `pluginName`
+- [Patchstack Academy](https://patchstack.com/academy/welcome/)
+- Browsing [plugin source code](https://plugins.svn.wordpress.org/)
+- Get [diff between plugin versions](https://plugins.trac.wordpress.org/browser/elementor)
+- Get [commit log](https://plugins.trac.wordpress.org/log/elementor)
+- Mass-hunting [code pattern](https://wpdirectory.net/)
+- Read CVE writeups: medium, wpscan blog, hackmd
+- Recent CVE disclosed: 
+    - [https://wpscan.com/plugins/](https://wpscan.com/plugins/)
+    - [https://app.opencve.io/cve/?product=wordpress&vendor=wordpress](https://app.opencve.io/cve/?product=wordpress&vendor=wordpress)
+    - [https://patchstack.com/database/](https://patchstack.com/database/)
+    - [https://www.wordfence.com/threat-intel/vulnerabilities](https://www.wordfence.com/threat-intel/vulnerabilities)
+    - [https://www.cve.org/CVERecord/SearchResults?query=wordpress](https://www.cve.org/CVERecord/SearchResults?query=wordpress)
+    - [https://solidwp.com/blog/category/wordpress-vulnerability-report/?clicked=%22true%22#categories](https://solidwp.com/blog/category/wordpress-vulnerability-report/?clicked=%22true%22#categories)
+- Bug bounty programs:
+    - [https://seahawkmedia.com/wordpress/bug-bounty-programs/](https://seahawkmedia.com/wordpress/bug-bounty-programs/)
+    - [https://hackerone.com/automattic/policy_scopes](https://hackerone.com/automattic/policy_scopes)
+    - [https://hackerone.com/wordpress/policy_scopes](https://hackerone.com/wordpress/policy_scopes)
+    - [https://wpscan.com/leaderboard/](https://wpscan.com/leaderboard/)
+    - [https://www.wordfence.com/threat-intel/bug-bounty-program](https://www.wordfence.com/threat-intel/bug-bounty-program)
 
 # Common functions
 - `sanitize_title( string $title, string $fallback_title = '', string $context = 'save' ): string`: Sanitizes a string into a slug, which can be used in URLs or HTML attributes.
@@ -36,84 +58,16 @@ This note is for my own educational purposes only, it is used for me to quickly 
 - `wp_kses_post()` – Alternative version of wp_kses()that automatically allows all HTML that is permitted in post content.
 - `wp_kses_data()` – Alternative version of wp_kses()that allows only the HTML permitted in post comments.
 
-# Hook
+# Some basic concepts
 
-## Action
-- https://developer.wordpress.org/reference/functions/add_action/
-- https://developer.wordpress.org/apis/hooks/action-reference/
+## Taxonomies
+- https://developer.wordpress.org/plugins/taxonomies/working-with-custom-taxonomies/
 
-
-```php
-function wporg_callback() {
-    // do something
-}
-add_action( 'init', 'wporg_callback' );
-```
-
-**Additional Parameters**
-
-`add_action()` can accept two additional parameters, `int $priority` for the priority given to the callback function, and `int $accepted_args` for the number of arguments that will be passed to the callback function.
-
-```php
-add_action('init', 'wporg_callback_run_me_late', 11);
-add_action('init', 'wporg_callback_run_me_normal');
-add_action('init', 'wporg_callback_run_me_early', 9);
-add_action('init', 'wporg_callback_run_me_later', 11);
-
-do_action( 'save_post', $post->ID, $post );
-add_action('save_post', 'wporg_custom', 10, 2);
-```
-
-## Filter
-- https://developer.wordpress.org/apis/hooks/filter-reference/
-- https://developer.wordpress.org/reference/functions/add_filter/
-
-> Unlike Actions, filters are meant to work in an isolated manner, and should never have side effects such as affecting global variables and output. Filters expect to have something returned back to them.
-
-```php
-function wporg_filter_title( $title ) {
-	return 'The ' . $title . ' was filtered';
-}
-add_filter( 'the_title', 'wporg_filter_title' );
-```
-
-## Custom hook
-- https://developer.wordpress.org/reference/functions/do_action/
-- https://developer.wordpress.org/reference/functions/apply_filters/
-
-```php
-// First componennt/plugin
-do_action( 'wporg_after_settings_page_html' );
-
-// Second componennt/plugin
-add_action( 'wporg_after_settings_page_html', 'myprefix_add_settings' );
-```
-
-```php
-// First componennt/plugin
-function wporg_create_post_type() {
-    $post_type_params = [/* ... */];
-
-    register_post_type(
-        'post_type_slug',
-        apply_filters( 'wporg_post_type_params', $post_type_params )
-    );
-}
-
-// Second componennt/plugin
-function myprefix_change_post_type_params( $post_type_params ) {
-	$post_type_params['hierarchical'] = true;
-	return $post_type_params;
-}
-add_filter( 'wporg_post_type_params', 'myprefix_change_post_type_params' );
-```
-
-## Other
-- https://developer.wordpress.org/reference/functions/remove_action/
-- https://developer.wordpress.org/reference/functions/remove_filter/
-- https://developer.wordpress.org/reference/functions/current_action/
-- https://developer.wordpress.org/reference/functions/current_filter/
-- https://developer.wordpress.org/reference/functions/did_action/
+> A Taxonomy is a fancy word for the classification/grouping of things. Taxonomies can be hierarchical (with parents/children) or flat.
+> WordPress stores the Taxonomies in the term_taxonomy database table allowing developers to register Custom Taxonomies along the ones that already exist.
+> 
+> Taxonomies have Terms which serve as the topic by which you classify/group things. They are stored inside the terms table.
+> For example: a Taxonomy named “Art” can have multiple Terms, such as “Modern” and “18th Century”.
 
 # User
 > Each user role inherits the previous roles in the hierarchy. For example, the “Administrator”, which is the highest user role on a single site installation, inherits the following roles and their capabilities: “Subscriber”, “Contributor”, “Author” and “Editor”.
@@ -149,8 +103,8 @@ add_action( 'init', 'wporg_simple_role_remove' );
 ```
 
 
-- When run add_role(), the role and its capabilities are saved to the database. If call add_role() again with different capabilities, nothing will change.**
-- After the first call to remove_role() , the Role and it’s Capabilities will be removed from the database. If call remove_role() again with different capabilities, nothing will change**
+- When run add_role(), the role and its capabilities are saved to the database. If call add_role() again with different capabilities, nothing will change.
+- After the first call to remove_role() , the Role and it’s Capabilities will be removed from the database. If call remove_role() again with different capabilities, nothing will change.
 
 ```php
 function wporg_simple_role_caps() {
@@ -160,141 +114,8 @@ function wporg_simple_role_caps() {
 	// Add a new capability.
 	$role->add_cap( 'edit_others_posts', true );
 }
-
 // Add simple_role capabilities, priority must be after the initial role definition.
 add_action( 'init', 'wporg_simple_role_caps', 11 );
-```
-
-```php
-user_can( $user, $capability );
-current_user_can( $capability );
-current_user_can_for_blog( $blog_id, $capability );
-```
-
-## User metadata
-- show_user_profile hook: This action hook is fired whenever a user edits it’s own user profile.
-- edit_user_profile hook: This action hook is fired whenever a user edits a user profile of somebody else.
-```php
-/**
- * The field on the editing screens.
- *
- * @param $user WP_User user object
- */
-function wporg_usermeta_form_field_birthday( $user ) {
-    ?>
-    <h3>It's Your Birthday</h3>
-    <table class="form-table">
-        <tr>
-            <th>
-                <label for="birthday">Birthday</label>
-            </th>
-            <td>
-                <input type="date"
-                       class="regular-text ltr"
-                       id="birthday"
-                       name="birthday"
-                       value="<?= esc_attr( get_user_meta( $user->ID, 'birthday', true ) ) ?>"
-                       title="Please use YYYY-MM-DD as the date format."
-                       pattern="(19[0-9][0-9]|20[0-9][0-9])-(1[0-2]|0[1-9])-(3[01]|[21][0-9]|0[1-9])"
-                       required>
-                <p class="description">
-                    Please enter your birthday date.
-                </p>
-            </td>
-        </tr>
-    </table>
-    <?php
-}
- 
-/**
- * The save action.
- *
- * @param $user_id int the ID of the current user.
- *
- * @return bool Meta ID if the key didn't exist, true on successful update, false on failure.
- */
-function wporg_usermeta_form_field_birthday_update( $user_id ) {
-    // check that the current user have the capability to edit the $user_id
-    if ( ! current_user_can( 'edit_user', $user_id ) ) {
-        return false;
-    }
- 
-    // create/update user meta for the $user_id
-    return update_user_meta(
-        $user_id,
-        'birthday',
-        $_POST['birthday']
-    );
-}
- 
-// Add the field to user's own profile editing screen.
-add_action(
-    'show_user_profile',
-    'wporg_usermeta_form_field_birthday'
-);
- 
-// Add the field to user profile editing screen.
-add_action(
-    'edit_user_profile',
-    'wporg_usermeta_form_field_birthday'
-);
- 
-// Add the save action to user's own profile editing screen update.
-add_action(
-    'personal_options_update',
-    'wporg_usermeta_form_field_birthday_update'
-);
- 
-// Add the save action to user profile editing screen update.
-add_action(
-    'edit_user_profile_update',
-    'wporg_usermeta_form_field_birthday_update'
-);
-```
-
-## Add user
-- wp_create_user() allows you to create a new WordPress user. It uses wp_slash() to escape the values. The PHP compact() function to create an array with these values. The wp_insert_user() to perform the insert operation.
-```php
-// check if the username is taken
-$user_id = username_exists( $user_name );
-
-// check that the email address does not belong to a registered user
-if ( ! $user_id && email_exists( $user_email ) === false ) {
-	// create a random password
-	$random_password = wp_generate_password( 12, false );
-	// create the user
-	$user_id = wp_create_user(
-		$user_name,
-		$random_password,
-		$user_email
-	);
-}
-```
-
-```php
-$username  = $_POST['username'];
-$password  = $_POST['password'];
-$website   = $_POST['website'];
-$user_data = [
-	'user_login' => $username,
-	'user_pass'  => $password,
-	'user_url'   => $website,
-];
-
-$user_id = wp_insert_user( $user_data );
-```
-
-## Update user
-```php
-$user_id = 1;
-$website = 'https://wordpress.org';
-
-$user_id = wp_update_user(
-	array(
-		'ID'       => $user_id,
-		'user_url' => $website,
-	)
-);
 ```
 
 # Database
@@ -304,68 +125,6 @@ mysql -u DB_USER -p DB_NAME
 # (credentials are in wp-config.php)
 DESCRIBE wp_posts;
 SHOW CREATE TABLE wp_posts\G
-```
-
-# Shortcodes
-Built-in Shortcodes:
-- [caption] – allows you to wrap captions around content
-- [gallery] – allows you to show image galleries
-- [audio] – allows you to embed and play audio files
-- [video] – allows you to embed and play video files
-- [playlist] – allows you to display collection of audio or video files
-- [embed] – allows you to wrap embedded items
-
-```php
-/**
- * The [wporg] shortcode.
- *
- * Accepts a title and will display a box.
- *
- * @param array  $atts    Shortcode attributes. Default empty.
- * @param string $content Shortcode content. Default null.
- * @param string $tag     Shortcode tag (name). Default empty.
- * @return string Shortcode output.
- */
-function wporg_shortcode( $atts = [], $content = null, $tag = '' ) {
-	// normalize attribute keys, lowercase
-	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
-
-	// override default attributes with user attributes
-	$wporg_atts = shortcode_atts(
-		array(
-			'title' => 'WordPress.org',
-		), $atts, $tag
-	);
-
-	// start box
-	$o = '<div class="wporg-box">';
-
-	// title
-	$o .= '<h2>' . esc_html( $wporg_atts['title'] ) . '</h2>';
-
-	// enclosing tags
-	if ( ! is_null( $content ) ) {
-		// $content here holds everything in between the opening and the closing tags of your shortcode. eg.g [my-shortcode]content[/my-shortcode].
-        // Depending on what your shortcode supports, you will parse and append the content to your output in different ways.
-		// In this example, we just secure output by executing the_content filter hook on $content.
-		$o .= apply_filters( 'the_content', $content );
-	}
-
-	// end box
-	$o .= '</div>';
-
-	// return output
-	return $o;
-}
-
-/**
- * Central location to create all shortcodes.
- */
-function wporg_shortcodes_init() {
-	add_shortcode( 'wporg', 'wporg_shortcode' );
-}
-
-add_action( 'init', 'wporg_shortcodes_init' );
 ```
 
 # Post
@@ -424,14 +183,7 @@ add_action('init', 'wporg_custom_post_type');
 > A custom post type gets its own slug within the site URL structure.
 > A post of type wporg_product will use the following URL structure by default: http://example.com/wporg_product/%product_name%.
 
-# Taxonomies
-- https://developer.wordpress.org/plugins/taxonomies/working-with-custom-taxonomies/
 
-> A Taxonomy is a fancy word for the classification/grouping of things. Taxonomies can be hierarchical (with parents/children) or flat.
-> WordPress stores the Taxonomies in the term_taxonomy database table allowing developers to register Custom Taxonomies along the ones that already exist.
-> 
-> Taxonomies have Terms which serve as the topic by which you classify/group things. They are stored inside the terms table.
-> For example: a Taxonomy named “Art” can have multiple Terms, such as “Modern” and “18th Century”.
 
 # REST API
 http://oursite.com/wp-json/
