@@ -95,7 +95,7 @@ def _instantiate(self, klass, args):
     if (args or not isinstance(klass, type) or
         hasattr(klass, "__getinitargs__")):
         try:
-            value = klass(*args)
+            value = klass(*args) # -> Malicious
         except TypeError as err:
             raise TypeError("in constructor for %s: %s" %
                             (klass.__name__, str(err)), err.__traceback__)
@@ -132,7 +132,7 @@ def load_build(self):
     inst = stack[-1]
     setstate = getattr(inst, "__setstate__", _NoValue)
     if setstate is not _NoValue:
-        setstate(state)
+        setstate(state) # -> Malicious
         return
     slotstate = None
     if isinstance(state, tuple) and len(state) == 2:
@@ -160,6 +160,7 @@ def load_obj(self):
     cls = args.pop(0)
     self._instantiate(cls, args)
 ```
+
 ## NEWOBJ
 ```python
 NEWOBJ         = b'\x81'  # build object by applying cls.__new__ to argtuple
@@ -181,7 +182,30 @@ def load_newobj_ex(self):
     self.append(obj)
 ```
 
+## REDUCE
+```python
+REDUCE         = b'R'   # apply callable to argtuple, both on stack
+
+def load_reduce(self):
+    stack = self.stack
+    args = stack.pop()
+    func = stack[-1]
+    stack[-1] = func(*args)
+```
+
+## Opcode for the memo:
+```python
+GET            = b'g'   # push item from memo on stack; index is string arg
+BINGET         = b'h'   #   "    "    "    "   "   "  ;   "    " 1-byte arg
+LONG_BINGET    = b'j'   # push item from memo on stack; index is 4-byte arg
+PUT            = b'p'   # store stack top in memo; index is string arg
+BINPUT         = b'q'   #   "     "    "   "   " ;   "    " 1-byte arg
+LONG_BINPUT    = b'r'   #   "     "    "   "   " ;   "    " 4-byte arg
+MEMOIZE          = b'\x94'  # store top of the stack in memo
+```
+
 ## Other opcodes:
+
 ```python
 EXT1           = b'\x82'  # push object from extension registry; 1-byte index
 PERSID         = b'P'   # push persistent object; id is taken from string arg
@@ -253,3 +277,4 @@ python3 -m pickletools data.pkl -a # Verbose explanation
 - https://xz.aliyun.com/news/13498
 - https://xz.aliyun.com/news/6608
 - https://cp04042k.github.io/posts/ictf-2023/
+- https://tjcsc.netlify.app/csc/writeups/angstromctf-2021-pickle
