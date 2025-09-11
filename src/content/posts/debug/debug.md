@@ -450,6 +450,27 @@ https://github.com/dhakalananda/wp-xdebug-docker
 
 ```
 
+# Java
+I debug in Intellij IDEA because look like everyone is using it(and most tutorial too), also in this [article](https://book.jorianwoltjer.com/languages/java#debugging), the author said Intellij IDEA will give the best experience.
+
+Here's how: Click **Run**(in the top tab of Intellij) -> **Edit Configurations** -> **+** -> **Remote JVM Debug** -> **Copy the command line arguments** then click **OK** to exit
+
+Paste the command line argument to Dockerfile, for ex:
+```dockerfile
+EXPOSE $PORT 5005
+CMD ["java","-Dserver.port=${PORT}","-jar", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005" ,"./app.jar"]
+```
+
+Then:
+- Start the container.
+- In IntelliJ, set breakpoints, then Debug the remote config.
+
+Note: Use the same sources locally that produced the JAR so IntelliJ can map line numbers.
+
+Also, if we get the error: "Source code doesn't match bytecode", do this:
+- Inside the container: java -version, for example it show Temurin 17
+- In IntelliJ Project SDK, pick a Temurin 17 install (same major + ideally same build)
+
 # Docker cheatsheet
 ## Common commands
 ```bash
