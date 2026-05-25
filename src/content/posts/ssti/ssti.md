@@ -1,7 +1,7 @@
 ---
 title: Learning about SSTI
-published: 2026-05-26
-description: 'Try to learn about SSTI'
+published: 2026-05-01
+description: 'Try to learning about SSTI'
 image: './image/ssti.png'
 tags: [web, ssti]
 category: 'SSTI'
